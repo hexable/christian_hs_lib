@@ -132,8 +132,8 @@ howManyEqual x y z
 -- Factorial of natural numbers
 fac :: Int -> Int
 fac x
-  | x == 0 = 1
-  | x > 0 = x * fac (x - 1)
+  | 0 == x = 1
+  | 0 < x = x * fac (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Range product. With range [m,n], it gives
@@ -148,37 +148,37 @@ rangeProduct m n
 fac2 :: Int -> Int
 fac2 x
   | x == 0 = 1
-  | x > 0 = rangeProduct 1 x
+  | 0 < x = rangeProduct 1 x
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Powers of 2 with natural numbers
 power2 :: Int -> Int
 power2 x
-  | x == 0 = 1
-  | x > 0 = 2 * power2 (x - 1)
+  | 0 == x = 1
+  | 0 < x = 2 * power2 (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Sum factorials of natural numbers so
 -- sumFacs x = fac 0 + .. + fac (x - 1) + fac x
 sumFacs :: Int -> Int
 sumFacs x
-  | x == 0 = fac 0
-  | x > 0 = fac x + sumFacs (x - 1)
+  | 0 == x = fac 0
+  | 0 < x = fac x + sumFacs (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Sum function, f, of Int -> Int using natural numbers so
 -- sumIntFunction f x = f 0 + .. + f (x - 1) + f x
 sumIntFunction :: (Int -> Int) -> Int -> Int
 sumIntFunction f x
-  | x == 0 = f 0
-  | x > 0 = f x + sumIntFunction f (x - 1)
+  | 0 == x = f 0
+  | 0 < x = f x + sumIntFunction f (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Multiplication of natural numbers using addition
 mult :: Int -> Int -> Int
 mult x y
-  | (x == 0)  || (y == 0) = 0
-  | x > 0 = x + mult x (y - 1)
+  | (0 == x)  || (0 == y) = 0
+  | 0 < x = x + mult x (y - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Integer square root of natural numbers
@@ -186,7 +186,7 @@ primitiveIntSqrt :: Int -> Int -> Int
 primitiveIntSqrt x y
   | x < 0 = error "ERROR(christian): Input not a natural number"
   | (y * y) == x = y
-  | (y * y) > x = y - 1
+  | x < (y * y) = y - 1
   | otherwise = primitiveIntSqrt x (y + 1)
 
 -- Determines the max Int output of an Int -> Int function applied to a range
@@ -197,10 +197,27 @@ maxIntFunction f n
   | 0 < n = max2 (f n) (f (n - 1))
   | otherwise = error "ERROR(christian): Input not a natural number"
 
--- Fibonacci numbers :-)
+-- Fibonacci numbers :-) TODO(christian): Don't recalculate fib(n - 2) when
+-- that becomes fib(n - 1)
 fib :: Int -> Int
 fib n
   | 0 == n = 0
   | 1 == n = 1
   | 1 < n = fib (n - 2) + fib (n - 1)
+  | otherwise = error "ERROR(christian): Input not a natural number or div by 0"
+
+-- Remainder after division of real numbers
+remainder :: Int -> Int -> Int
+remainder num denom
+  | (0 <= num) && (num < denom) = num
+  | (denom < num) && (0 < denom) = remainder (num - denom) denom
   | otherwise = error "ERROR(christian): Input not a natural number"
+
+-- Quotient after division of real numbers. AKA integer division
+intDivide :: Int -> Int -> Int
+intDivide num denom
+  | num < denom = 0
+  | denom <= num && (0 < denom) = 1 + intDivide (num - denom) denom
+  | otherwise = error "ERROR(christian): Input not a natural number or div by 0"
+
+-- TODO(christian): GCD & exponent optimised
