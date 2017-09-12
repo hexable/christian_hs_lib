@@ -12,13 +12,6 @@ function name is postfixed with '2'.>
 
 import Data.Char
 
--- Exclusive or
-xor :: Bool -> Bool -> Bool
-xor True False = True
-xor False True = True
-xor False False = False
-xor True True = False
-
 -- Are three Ints equal
 areThreeIntsEqual :: Int -> Int -> Int -> Bool
 areThreeIntsEqual a b c = (a == b) && (b == c)
@@ -58,7 +51,7 @@ weakAscendingOrder x y z
   | (x <= y) && (y <= z) = True
   | otherwise = False
 
--- Is an Int between two other Ints
+-- Between using weak ascending order
 between2 :: Int -> Int -> Int -> Bool
 between2 x y z = weakAscendingOrder y x z
 
@@ -73,7 +66,18 @@ nAnd2 False True = True
 nAnd2 False False = True
 nAnd2 True True = False
 
--- Char from ['0','Z'] to respective Int where 'A' = 10
+-- Exclusive or
+xor :: Bool -> Bool -> Bool
+xor True False = True
+xor False True = True
+xor False False = False
+xor True True = False
+
+-- Different xor
+xor2 :: Bool -> Bool -> Bool
+xor2 p q = not(p && q) && (p || q)
+
+-- Char from range ['0','Z'] to respective Int where 'A' = 10
 charDigitToInt :: Char -> Int
 charDigitToInt x = digitToInt x
 
@@ -147,7 +151,7 @@ fac2 x
   | x > 0 = rangeProduct 1 x
   | otherwise = error "ERROR(christian): Input not a natural number"
 
--- Powers of 2 with natural numebers
+-- Powers of 2 with natural numbers
 power2 :: Int -> Int
 power2 x
   | x == 0 = 1
