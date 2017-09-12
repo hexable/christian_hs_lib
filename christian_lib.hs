@@ -196,3 +196,11 @@ maxIntFunction f n
   | n == 0 = f 0
   | 0 < n = max2 (f n) (f (n - 1))
   | otherwise = error "ERROR(christian): Input not a natural number"
+
+-- Fibonacci numbers :-)
+fib :: Int -> Int
+fib n
+  | 0 == n = 0
+  | 1 == n = 1
+  | 1 < n = fib (n - 2) + fib (n - 1)
+  | otherwise = error "ERROR(christian): Input not a natural number"
