@@ -127,9 +127,9 @@ howManyEqual x y z
 
 -- Factorial
 fac :: Int -> Int
-fac n
-  | n == 0 = 1
-  | n > 0 = n * fac (n - 1)
+fac x
+  | x == 0 = 1
+  | x > 0 = x * fac (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Range product. With range [m,n], it gives
@@ -139,3 +139,32 @@ rangeProduct m n
   | n < m = 0
   | n == m = 1
   | otherwise = n * rangeProduct m (n - 1)
+
+-- Factorial using range product
+fac2 :: Int -> Int
+fac2 x
+  | x == 0 = 1
+  | otherwise = rangeProduct 1 x
+
+-- Powers of 2
+power2 :: Int -> Int
+power2 x
+  | x == 0 = 1
+  | x > 0 = 2 * power2 (x - 1)
+  | otherwise = error "ERROR(christian): Input not a natural number"
+
+-- Sum factorials so
+-- sumFacs x = fac 0 + .. + fac (x - 1) + fac x
+sumFacs :: Int -> Int
+sumFacs x
+  | x == 0 = fac 0
+  | x > 0 = fac x + sumFacs (x - 1)
+  | otherwise = error "ERROR(christian): Input not a natural number"
+
+-- Sum function, f, of Int -> Int so
+-- sumIntFunction f x = f 0 + .. + f (x - 1) + f x
+sumIntFunction :: (Int -> Int) -> Int -> Int
+sumIntFunction f x
+  | x == 0 = f 0
+  | x > 0 = f x + sumIntFunction f (x - 1)
+  | otherwise = error "ERROR(christian): Input not a natural number"
