@@ -176,3 +176,19 @@ mult x y
   | (x == 0)  || (y == 0) = 0
   | x > 0 = x + mult x (y - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
+
+-- Integer square root of natural numbers
+primitiveIntSqrt :: Int -> Int -> Int
+primitiveIntSqrt x y
+  | x < 0 = error "ERROR(christian): Input not a natural number"
+  | (y * y) == x = y
+  | (y * y) > x = y - 1
+  | otherwise = primitiveIntSqrt x (y + 1)
+
+-- Determines the max Int output of an Int -> Int function applied to a range
+-- [0,n]. In other words, taking the max of the set {f 0, .. , f (n - 1), f n}
+maxIntFunction :: (Int -> Int) -> Int -> Int
+maxIntFunction f n
+  | n == 0 = f 0
+  | 0 < n = max2 (f n) (f (n - 1))
+  | otherwise = error "ERROR(christian): Input not a natural number"
