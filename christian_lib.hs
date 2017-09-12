@@ -131,3 +131,11 @@ fac n
   | n == 0 = 1
   | n > 0 = n * fac (n - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
+
+-- Range product. With range [m,n], it gives
+-- m * (m + 1) * ... * (n - 1) * n
+rangeProduct :: Int -> Int -> Int
+rangeProduct m n
+  | n < m = 0
+  | n == m = 1
+  | otherwise = n * rangeProduct m (n - 1)
