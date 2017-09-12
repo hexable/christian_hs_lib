@@ -124,3 +124,10 @@ howManyEqual x y z
   | y == z = 2
   | x == z = 2
   | otherwise = 0
+
+-- Factorial
+fac :: Int -> Int
+fac n
+  | n == 0 = 1
+  | n > 0 = n * fac (n - 1)
+  | otherwise = error "ERROR(christian): Input not a natural number"
