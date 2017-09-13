@@ -13,12 +13,12 @@ function name is postfixed with '2'.>
 import Data.Char
 
 -- Are three Ints equal
-areThreeIntsEqual :: Int -> Int -> Int -> Bool
-areThreeIntsEqual a b c = (a == b) && (b == c)
+are3IntsEqual :: Int -> Int -> Int -> Bool
+are3IntsEqual a b c = (a == b) && (b == c)
 
 -- Are three Ints not equal
-areThreeIntsNotEqual :: Int -> Int -> Int -> Bool
-areThreeIntsNotEqual a b c = (a /= b) && (a /= c) && (b /= c)
+are3IntsNotEqual :: Int -> Int -> Int -> Bool
+are3IntsNotEqual a b c = (a /= b) && (a /= c) && (b /= c)
 
 -- Max of two Ints
 max2 :: Int -> Int -> Int
@@ -31,12 +31,12 @@ max2 x y
 x &&& y = max2 x y
 
 --  Max of three Ints
-maxThree :: Int -> Int -> Int -> Int
-maxThree x y z = max2 (max2 x y) z
+max3 :: Int -> Int -> Int -> Int
+max3 x y z = max2 (max2 x y) z
 
 -- Max of four Ints
-maxFour :: Int -> Int -> Int -> Int -> Int
-maxFour x y z w = max2 (maxThree x y z) w
+max4 :: Int -> Int -> Int -> Int -> Int
+max4 x y z w = max2 (max3 x y z) w
 
 -- Is an Int between two other Ints
 between :: Int -> Int -> Int -> Bool
@@ -45,26 +45,26 @@ between x y z
   | (z <= x) && (x <= y) = True
   | otherwise = False
 
--- Does a sequence not decrease
-weakAscendingOrder :: Int -> Int -> Int -> Bool
-weakAscendingOrder x y z
+-- Is there a weak ascending order
+weakAscOrder :: Int -> Int -> Int -> Bool
+weakAscOrder x y z
   | (x <= y) && (y <= z) = True
   | otherwise = False
 
 -- Between using weak ascending order
 between2 :: Int -> Int -> Int -> Bool
-between2 x y z = weakAscendingOrder y x z
+between2 x y z = weakAscOrder y x z
 
 -- !&&
-nAnd :: Bool -> Bool -> Bool
-nAnd x y = not(x && y)
+nand :: Bool -> Bool -> Bool
+nand x y = not(x && y)
 
--- Second implementation of nAnd
-nAnd2 :: Bool -> Bool -> Bool
-nAnd2 True False = True
-nAnd2 False True = True
-nAnd2 False False = True
-nAnd2 True True = False
+-- Second implementation of nand
+nand2 :: Bool -> Bool -> Bool
+nand2 True False = True
+nand2 False True = True
+nand2 False False = True
+nand2 True True = False
 
 -- Exclusive or
 xor :: Bool -> Bool -> Bool
@@ -73,7 +73,7 @@ xor False True = True
 xor False False = False
 xor True True = False
 
--- Different xor
+-- Second implementation of xor
 xor2 :: Bool -> Bool -> Bool
 xor2 p q = not(p && q) && (p || q)
 
@@ -94,20 +94,20 @@ isUpper2 c
   | otherwise = False
 
 -- Offset between uppercase and lowercase
-capitalOffset :: Int
-capitalOffset = ord 'a'  - ord 'A'
+uppercaseOffset :: Int
+uppercaseOffset = ord 'a'  - ord 'A'
 
 -- Convert lowercase Char to uppercase Char
 toUpper2 :: Char -> Char
 toUpper2 c
   | isUpper2 c = c
-  | otherwise = chr((ord c) - capitalOffset)
+  | otherwise = chr((ord c) - uppercaseOffset)
 
 -- Convert uppercase Char to lowercase Char
 toLower2 :: Char -> Char
 toLower2 c
   | isLower2 c = c
-  | otherwise = chr((ord c) + capitalOffset)
+  | otherwise = chr((ord c) + uppercaseOffset)
 
 -- Is a character in the range ['0', '9']
 isCharDigit :: Char -> Bool
@@ -122,12 +122,20 @@ equalToInt x y
   | x /= y = 0
 
 -- How many of three Ints are equal
-howManyEqual :: Int -> Int -> Int -> Int
-howManyEqual x y z
+howManyOf3IntsEqual :: Int -> Int -> Int -> Int
+howManyOf3IntsEqual x y z
   | x == y = 2 + (equalToInt y z)
   | y == z = 2
   | x == z = 2
   | otherwise = 0
+
+-- What of 3 Ints are equal
+whatOf3IntsEqual :: Int -> Int -> Int -> [Int]
+whatOf3IntsEqual x y z
+  | x == y = [x]
+  | y == z = [z]
+  | x == z = [x]
+  | otherwise = []
 
 -- Factorial of natural numbers
 fac :: Int -> Int
@@ -197,8 +205,7 @@ maxIntFunction f n
   | 0 < n = max2 (f n) (f (n - 1))
   | otherwise = error "ERROR(christian): Input not a natural number"
 
--- Fibonacci numbers :-) TODO(christian): Don't recalculate fib(n - 2) when
--- that becomes fib(n - 1)
+-- Calculate the nth Fibbonaci number, see my faster version below :-)
 fib :: Int -> Int
 fib n
   | 0 == n = 0
@@ -221,3 +228,49 @@ intDivide num denom
   | otherwise = error "ERROR(christian): Input not a natural number or div by 0"
 
 -- TODO(christian): GCD & exponent optimised
+
+-- Return the min & max Int of 2 Ints
+getMinAndMax :: Int -> Int -> (Int, Int)
+getMinAndMax x y
+  | x < y = (x, y)
+  | y < x = (y, x)
+  | otherwise = (x, y)
+
+-- How many times do we see an Int
+howManyOccursIntIn2 :: Int -> Int -> Int -> Int
+howManyOccursIntIn2 w x y = (w `equalToInt` x) + (w `equalToInt` y)
+
+howManyOccursIntIn3 ::  Int -> Int -> Int -> Int -> Int
+howManyOccursIntIn3 w x y z
+  = (w `equalToInt` x) + (w `equalToInt` y)  + (w `equalToInt` z)
+
+-- Example tuple work
+shiftTupleRightExample :: ((Int, Int), Int) -> (Int, (Int, Int))
+shiftTupleRightExample ((x, y), z) = (z, (x, y))
+
+-- Add pair using haskell selector functions
+addTupleIntPair :: (Int, Int) -> Int
+addTupleIntPair s = fst s + snd s
+
+-- nth Fibonacci number with tuples!
+fibStep :: (Int, Int) -> (Int, Int)
+fibStep (u, v) = (v, u + v)
+
+nthFibPair :: Int -> (Int, Int)
+nthFibPair n
+  | 0 == n = (0, 1)
+  | 0 < n = fibStep (nthFibPair (n - 1))
+  | otherwise = error "ERROR(christian): Input not a natural number"
+
+fib2 :: Int -> Int
+fib2 = fst . nthFibPair
+
+-- Max Int and how many times we see it amongst two Ints
+getMaxAndOccursIn2 :: Int -> Int -> (Int, Int)
+getMaxAndOccursIn2 x y
+  | x == y = (x, 2)
+  | otherwise = ((max2 x y), 1)
+
+getMaxAndOccursIn3 :: Int -> Int -> Int -> (Int, Int)
+getMaxAndOccursIn3 x y z = ((max3 x y z),
+                            (howManyOccursIntIn3 (max3 x y z) x y z))
