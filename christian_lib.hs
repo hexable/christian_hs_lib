@@ -30,13 +30,34 @@ max2 x y
 (&&&) :: Int -> Int -> Int
 x &&& y = max2 x y
 
---  Max of three Ints
+--  Max of 3 Ints
 max3 :: Int -> Int -> Int -> Int
 max3 x y z = max2 (max2 x y) z
 
--- Max of four Ints
+-- Max of 4 Ints
 max4 :: Int -> Int -> Int -> Int -> Int
 max4 x y z w = max2 (max3 x y z) w
+
+-- Min of 2 Ints
+min2 :: Int -> Int -> Int
+min2 x y
+  | x < y = x
+  | otherwise = y
+
+-- Min of 3 Ints
+min3 :: Int -> Int -> Int -> Int
+min3 x y z = min2 (min2 x y) z
+
+-- Min of 4 Ints
+min4 :: Int -> Int -> Int -> Int -> Int
+min4 x y z w = min2 (min3 x y z) w
+
+-- Middle of 3 Ints
+middle3 :: Int -> Int -> Int -> Int
+middle3 x y z
+  | x == min3 x y z = min2 y z
+  | y == min3 x y z = min2 x z
+  | z == min3 x y z = min2 x y
 
 -- Is an Int between two other Ints
 between :: Int -> Int -> Int -> Bool
@@ -274,3 +295,17 @@ getMaxAndOccursIn2 x y
 getMaxAndOccursIn3 :: Int -> Int -> Int -> (Int, Int)
 getMaxAndOccursIn3 x y z = ((max3 x y z),
                             (howManyOccursIntIn3 (max3 x y z) x y z))
+
+-- Order triple
+orderTriple :: (Int, Int, Int) -> (Int, Int, Int)
+orderTriple (p, q, r) = (max3 p q r, middle3 p q r, min3 p q r)
+
+-- Find the x-axis intersection of a straight line on a cartesian plane.
+-- Expect results of infinity if you pass a line that doesn't corss the x-axis.
+-- m == gradient
+-- c == y-axis intersection
+type Coord = (Float, Float)
+xAxisIntersect :: Float -> Float -> Coord
+xAxisIntersect m c
+  | c == 0 = (0, 0)
+  | otherwise = (((-c) / m), 0)
