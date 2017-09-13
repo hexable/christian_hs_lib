@@ -121,13 +121,13 @@ uppercaseOffset = ord 'a'  - ord 'A'
 -- Convert lowercase Char to uppercase Char
 toUpper2 :: Char -> Char
 toUpper2 c
-  | isUpper2 c = c
+  | isUpper2 c || not(isAlpha c) = c
   | otherwise = chr((ord c) - uppercaseOffset)
 
 -- Convert uppercase Char to lowercase Char
 toLower2 :: Char -> Char
 toLower2 c
-  | isLower2 c = c
+  | isLower2 c || not(isAlpha c) = c
   | otherwise = chr((ord c) + uppercaseOffset)
 
 -- Is a character in the range ['0', '9']
@@ -309,3 +309,51 @@ xAxisIntersect :: Float -> Float -> Coord
 xAxisIntersect m c
   | c == 0 = (0, 0)
   | otherwise = (((-c) / m), 0)
+
+-- Is even
+isEven :: Int -> Bool
+isEven x
+  | x `mod` 2 == 0 = True
+  | otherwise = False
+
+-- Is odd
+isOdd :: Int -> Bool
+isOdd x = not(isEven x)
+
+-- Testing the <- generator
+sumListTuples :: [(Int, Int)] -> [Int]
+sumListTuples list = [m + n | (m,n) <- list]
+
+-- Get all digits in a String
+stringToDigitString :: String -> String
+stringToDigitString string = [c | c <- string, isCharDigit c]
+
+-- Are all elements of a list even
+allEven :: [Int] -> Bool
+allEven list = list == [s | s <- list, isEven s]
+
+-- Are all elements of a list odd
+allOdd :: [Int] -> Bool
+allOdd list = [] == [s | s <- list, isEven s]
+
+-- Double all elements of a list
+doubleList :: [Int] -> [Int]
+doubleList list = [2 * s | s <- list]
+
+-- Capitalise any Char in a String
+capitalise :: String -> String
+capitalise string = [toUpper2 s | s <- string]
+
+-- Capitalise but now only return alpha Chars
+capitaliseLetters :: String -> String
+capitaliseLetters string = [toUpper2 s | s <- string, 'A' <= s, s <= 'z']
+
+-- Factors of a natural number
+factors :: Int -> [Int]
+factors x = [s | s <- [1 .. x], (mod x s) == 0]
+
+-- Is a natural number prime
+isPrime :: Int -> Bool
+isPrime x
+  | 0 <= x = [1, x] == factors x
+  | otherwise = error "ERROR(christian): Input not a natural number"
