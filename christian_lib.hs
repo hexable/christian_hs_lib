@@ -1,16 +1,26 @@
-{- |
-Module      :  <christian_lib.hs>
-Description :  <My problems solved in Haskell>
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  christian_lib
+-- Maintainer  :  ctfgm@protonmail.ch
+-- Stability   :  unstable
+-- Portability :  portable
+--
+-- This is my personal haskell library, let's see where it goes.
+--
+-----------------------------------------------------------------------------
 
-Maintainer  :  <ctfgm@prtonmail.ch>
-Stability   :  unstable
-Portability :  portable
-
-<The foundations for solving any bigger problem. Note that any conflicting
-function name is postfixed with '2'.>
--}
-
+import Test.QuickCheck
 import Data.Char
+import Data.List
+
+{- Here is your machine's Int boundaries. You are at least guaranteed
+[-(2^29), 2^29].
+-}
+minIntBound :: Int
+minIntBound = minBound
+
+maxIntBound :: Int
+maxIntBound = maxBound
 
 -- Are three Ints equal
 are3IntsEqual :: Int -> Int -> Int -> Bool
@@ -68,9 +78,7 @@ between x y z
 
 -- Is there a weak ascending order
 weakAscOrder :: Int -> Int -> Int -> Bool
-weakAscOrder x y z
-  | (x <= y) && (y <= z) = True
-  | otherwise = False
+weakAscOrder x y z = (x <= y) && (y <= z)
 
 -- Between using weak ascending order
 between2 :: Int -> Int -> Int -> Bool
@@ -104,15 +112,11 @@ charDigitToInt x = digitToInt x
 
 -- Is a Char lowercase
 isLower2 :: Char -> Bool
-isLower2 c
-  | ('a' <= c) && (c <= 'z') = True
-  | otherwise = False
+isLower2 c = ('a' <= c) && (c <= 'z')
 
 -- Is a Char uppercase
 isUpper2 :: Char -> Bool
-isUpper2 c
-  | ('A' <= c) && (c <= 'Z') = True
-  | otherwise = False
+isUpper2 c = ('A' <= c) && (c <= 'Z')
 
 -- Offset between uppercase and lowercase
 uppercaseOffset :: Int
@@ -132,9 +136,7 @@ toLower2 c
 
 -- Is a character in the range ['0', '9']
 isCharDigit :: Char -> Bool
-isCharDigit c
-  | ('0' <= c) && (c <= '9') = True
-  | otherwise = False
+isCharDigit c = ('0' <= c) && (c <= '9')
 
 -- Are two integers equal, 1 for yay, 0 for nay
 equalToInt :: Int -> Int -> Int
@@ -165,8 +167,9 @@ fac x
   | 0 < x = x * fac (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
--- Range product. With range [m,n], it gives
--- m * (m + 1) * ... * (n - 1) * n
+{- Range product. With range [m,n], it gives
+m * (m + 1) * ... * (n - 1) * n
+-}
 rangeProduct :: Int -> Int -> Int
 rangeProduct m n
   | n < m = 0
@@ -187,16 +190,18 @@ power2 x
   | 0 < x = 2 * power2 (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
--- Sum factorials of natural numbers so
--- sumFacs x = fac 0 + .. + fac (x - 1) + fac x
+{- Sum factorials of natural numbers so
+sumFacs x = fac 0 + .. + fac (x - 1) + fac x
+-}
 sumFacs :: Int -> Int
 sumFacs x
   | 0 == x = fac 0
   | 0 < x = fac x + sumFacs (x - 1)
   | otherwise = error "ERROR(christian): Input not a natural number"
 
--- Sum function, f, of Int -> Int using natural numbers so
--- sumIntFunction f x = f 0 + .. + f (x - 1) + f x
+{- Sum function, f, of Int -> Int using natural numbers so
+sumIntFunction f x = f 0 + .. + f (x - 1) + f x
+-}
 sumIntFunction :: (Int -> Int) -> Int -> Int
 sumIntFunction f x
   | 0 == x = f 0
@@ -218,8 +223,9 @@ primitiveIntSqrt x y
   | x < (y * y) = y - 1
   | otherwise = primitiveIntSqrt x (y + 1)
 
--- Determines the max Int output of an Int -> Int function applied to a range
--- [0,n]. In other words, taking the max of the set {f 0, .. , f (n - 1), f n}
+{- Determines the max Int output of an Int -> Int function applied to a range
+[0,n]. In other words, taking the max of the set {f 0, .. , f (n - 1), f n}
+-}
 maxIntFunction :: (Int -> Int) -> Int -> Int
 maxIntFunction f n
   | n == 0 = f 0
@@ -242,7 +248,7 @@ remainder num denom
   | otherwise = error "ERROR(christian): Input not a natural number"
 
 -- Quotient after division of real numbers. AKA integer division
-intDivide :: Int -> Int -> Int
+intDivide :: Integer -> Integer -> Integer
 intDivide num denom
   | num < denom = 0
   | denom <= num && (0 < denom) = 1 + intDivide (num - denom) denom
@@ -300,10 +306,11 @@ getMaxAndOccursIn3 x y z = ((max3 x y z),
 orderTriple :: (Int, Int, Int) -> (Int, Int, Int)
 orderTriple (p, q, r) = (max3 p q r, middle3 p q r, min3 p q r)
 
--- Find the x-axis intersection of a straight line on a cartesian plane.
--- Expect results of infinity if you pass a line that doesn't corss the x-axis.
--- m == gradient
--- c == y-axis intersection
+{- Find the x-axis intersection of a straight line on a cartesian plane.
+Expect results of infinity if you pass a line that doesn't corss the x-axis.
+m == gradient
+c == y-axis intersection
+-}
 type Coord = (Float, Float)
 xAxisIntersect :: Float -> Float -> Coord
 xAxisIntersect m c
@@ -312,9 +319,7 @@ xAxisIntersect m c
 
 -- Is even
 isEven :: Int -> Bool
-isEven x
-  | x `mod` 2 == 0 = True
-  | otherwise = False
+isEven x = x `mod` 2 == 0
 
 -- Is odd
 isOdd :: Int -> Bool
@@ -350,10 +355,273 @@ capitaliseLetters string = [toUpper2 s | s <- string, 'A' <= s, s <= 'z']
 
 -- Factors of a natural number
 factors :: Int -> [Int]
-factors x = [s | s <- [1 .. x], (mod x s) == 0]
+factors x = [s | s <- [1 .. div x 2], (mod x s) == 0] ++ [x]
 
 -- Is a natural number prime
 isPrime :: Int -> Bool
 isPrime x
   | 0 <= x = [1, x] == factors x
   | otherwise = error "ERROR(christian): Input not a natural number"
+
+-- Get the first element of a list
+head2 :: [q] -> q
+head2 (q : _) = q
+head2 [] = error "ERROR(christian): Input is an empty list"
+
+-- Get everything after the head of a list
+tail2 :: [q] -> [q]
+tail2 (_ : qs) = qs
+tail2 [] = error "ERROR(christian): Input is an empty list"
+
+-- Is an alpha Char?
+isAlpha2 :: Char -> Bool
+isAlpha2 c = ('A' <= c) && (c <= 'z')
+
+-- Is white space?
+isWhiteSpace :: Char -> Bool
+isWhiteSpace c = c == ' '
+
+-- Not white space?
+notWhiteSpace :: Char -> Bool
+notWhiteSpace c = c /= ' '
+
+{- Get elements in a list while a predicate function, p, is satisfied, reading
+list from left to right.
+-}
+takeWhilePredicate :: (q -> Bool) -> [q] -> [q]
+takeWhilePredicate p [] = []
+takeWhilePredicate p (q : qs)
+  | p q = q : takeWhilePredicate p qs
+  | otherwise = []
+
+-- Get the suffix that takeWhilePredicate drops
+dropWhilePredicate :: (q -> Bool) -> [q] -> [q]
+dropWhilePredicate p [] = []
+dropWhilePredicate p (q : qs)
+  | p q = dropWhilePredicate p qs
+  | otherwise = qs
+
+-- Erase leading white space
+eraseLeadingWhiteSpace :: String -> String
+eraseLeadingWhiteSpace [] = []
+eraseLeadingWhiteSpace (c : cs)
+  | notWhiteSpace c = (c : cs)
+  | isWhiteSpace c = eraseLeadingWhiteSpace cs
+
+{- Take a tuple with the first part as a sentence and the second part an empty
+list. The return is another tuple with the first part as the sentence minus the
+first word and any following whtie space. The second part is the first word.
+-}
+firstWord :: (String, String) -> (String, String)
+firstWord ([], []) = ([], [])
+firstWord ([], words) = ([], words)
+firstWord ((c : cs), word)
+  | isWhiteSpace c = (eraseLeadingWhiteSpace cs, word)
+  | notWhiteSpace c = firstWord (cs, word ++ [c])
+
+{- Break a String in a list of the words. Words are seperated by white space.
+There already exists a Prelude function but this is my own try at an
+implementation. Doing a quickCheck comparison of mine vs Prelude's revealed I
+don't know how to return [] instead of [""] when " " is passed as an argument.
+-}
+stringToWords :: String  -> [String]
+stringToWords [] = []
+stringToWords cs = wordTaken ++ rest
+  where wordTaken = [(snd (firstWord (cs, [])))]
+        rest = (stringToWords (fst (firstWord (cs, []))))
+
+-- Reverse polish notation arithmetic of +, -, * and div over natural numbers
+rpn :: String -> Integer
+rpn string
+  = let parsedString = words string
+
+        foldStackFunction (x:y:rest) "*" = (x*y):rest
+        foldStackFunction (x:y:rest) "/" = (intDivide y x):rest
+        foldStackFunction (x:y:rest) "+" = (x+y):rest
+        foldStackFunction (x:y:rest) "-" = (y-x):rest
+        foldStackFunction stack number = (read number):stack
+
+    in head $ foldl foldStackFunction [] parsedString
+
+-- Pattern matching function that adds the first two Integers in a list
+sumHeads :: [Integer] -> Integer
+sumHeads (x:y:_) = x + y
+sumHeads (x:_) = x
+sumHeads _ = 0
+
+-- && over a list of Bools
+listAnd :: [Bool] -> Bool
+listAnd (x:xs)
+  | xs == [] = x
+  | otherwise = x && listAnd xs
+listAnd [] = error "ERROR(christian): Input is an empty list"
+
+listAnd2 :: [Bool] -> Bool
+listAnd2 (x:xs) = x && (listAnd2 xs)
+listAnd2 _ = True -- Note the preservation of &&'ing over an empty set
+
+listAnd3 :: [Bool] -> Bool
+listAnd3 xs = foldr (&&) True xs
+
+listAnd4 :: [Bool] -> Bool
+listAnd4 xs = not (False `elem` xs)
+
+listAnd5 :: [Bool] -> Bool
+listAnd5 xs = all id xs
+
+-- lor (||) over a list of Bools
+listOr :: [Bool] -> Bool
+listOr xs = True `elem` xs
+
+listOr2 :: [Bool] -> Bool
+listOr2 xs = any id xs
+
+{- How many times an Integer occurs in list. Note that using genericLength gives
+the extra precision of Integer with the penalty of cost for computation. Both
+Integer and Int versions are available.
+-}
+integerListOccurs :: Integer -> [Integer] -> Integer
+integerListOccurs x xs = genericLength [occ | occ <- xs, occ == x]
+
+intListOccurs :: Int -> [Int] -> Int
+intListOccurs x xs = length [occ | occ <- xs, occ == x]
+
+intListOccurs2 :: Int -> [Int] -> Int
+intListOccurs2 x (y:ys) = (equalToInt x y) + (intListOccurs2 x ys)
+intListOccurs2 _ _ = 0
+
+intListOccurs3 :: Int -> [Int] -> Int
+intListOccurs3 x xs = length $ filter (== x) xs
+
+
+-- Get any Integers that only appear once
+uniqueInteger :: [Integer] -> [Integer]
+uniqueInteger ns = [xs | xs <- ns, (integerListOccurs xs ns) == 1]
+
+{- Is a substring of a String? e.g "ship" is a substring of "fish and chips"
+but not "hippies"
+-}
+isSubstring :: String -> String -> Bool
+isSubstring [] _ = True
+isSubstring _ [] = False
+isSubstring p@(x:xs) q@(y:ys)
+  | x == y = isSubstring xs ys
+  | otherwise = isSubstring p ys
+
+{- Is a subsequence of a String? e.g "chip" is a subsequence of "fish and chips"
+but not "chin up"
+-}
+isSubsequence :: String -> String -> Bool
+isSubsequence [] _ = True
+isSubsequence _ [] = False
+isSubsequence p@(x:xs) q@(y:ys)
+  | x == y && isSubsequence xs ys = True
+  | otherwise = isSubsequence p ys
+
+-- Is a String a palindrome?
+isPalindrome :: String -> Bool
+isPalindrome cs = cleanString == reverseCleanString
+  where cleanString = map toLower (filter isAlpha2 cs)
+        reverseCleanString = reverse cleanString
+
+-- Make a list of Strings of all digits in String
+stringDigits :: String -> [String]
+stringDigits digits = [[c] | c <- digits, isCharDigit c]
+
+-- Make a list of strings of each digit in an Integer
+integerToDigitStringList :: Integer -> [String]
+integerToDigitStringList x = stringDigits $ show x
+
+{- Modular exponentiation. This is the calculation of 'x^n mod m'. For example
+you might want the last few digits in a crazy large computation of x^n.
+-}
+modularExpo :: Integer -> Integer -> Integer -> Integer
+modularExpo x n m = modularExpoHelper x n m 1 where
+  modularExpoHelper x n m product
+    | n == 0 = product
+    | even n = modularExpoHelper (mod (x*x) m) (div n 2) m product
+    | odd n
+    = modularExpoHelper (mod (x*x) m) (div n 2) m (mod (product*x) m)
+
+{- Modular exponentiation, where d is the number of digits at the end of the
+result you want
+-}
+lastDigitsPow :: Integer -> Integer -> Integer -> Integer
+lastDigitsPow x n 0 = error "ERROR(christian): digit number request is 0"
+lastDigitsPow x n d = modularExpo x n (10^d)
+
+-- Computes  x^n + x^(n-1) + .. + x^0 and gives the last d digits
+lastDigitsPowSum :: Integer -> Integer -> Integer -> Integer -> Integer
+lastDigitsPowSum x n 0 sum = error "ERROR(christian): digit number request is 0"
+lastDigitsPowSum x 0 d sum = mod (sum + 1) (10^d)
+lastDigitsPowSum x n d sum
+  = lastDigitsPowSum x (n-1) d (sum + (lastDigitsPow x n d))
+
+-- Append n 0's to a list
+append0 :: Integer -> [Integer] -> [Integer]
+append0 0 xs = xs
+append0 n xs = append0 (n-1) (0:xs)
+
+-- Preforms lastDigitsPowSum and returns each digit, in order, in a list.
+lastDigitsPowSumList :: Integer -> Integer -> [Integer]
+lastDigitsPowSumList n 0 = []
+lastDigitsPowSumList n d = append0 lengthDiff ds
+  where cs = integerToDigitStringList $ lastDigitsPowSum n n d 0
+        ds = [read digit | digit <- cs]
+        lengthDiff = d - genericLength ds
+
+-- Polynomial addition, which is associative!
+polyAdd :: [Double] -> [Double] -> [Double]
+polyAdd [] [] = []
+polyAdd a b
+  | aDeg == bDeg = dropWhile (==0) $ zipWith (+) a b
+  | bDeg < aDeg =  dropWhile (==0) $ (take (aDeg - bDeg) a) ++ zipResult
+  | aDeg < bDeg =  dropWhile (==0) $ (take (bDeg - aDeg) b) ++ zipResult
+  where aDeg = genericLength a
+        bDeg = genericLength b
+        zipResult = reverse $ zipWith (+) (reverse a) (reverse b)
+
+-- Negate a Double unless it's 0
+negDouble :: Double -> Double
+negDouble x = if x == 0.0 then 0.0 else -x
+
+-- Polynomial subtraction. Just like arithmetic subtraction, not associative
+polySub :: [Double] -> [Double] -> [Double]
+polySub a b = polyAdd a (map (negDouble) b)
+
+-- Polynomial multiplication by constant
+polyMultiply :: [Double] -> [Double] -> [Double]
+polyMultiply [] _ = []
+polyMultiply _ [] = []
+polyMultiply [c] ys = dropWhile (==0) (map (*c) ys)
+polyMultiply (x:xs) ys =
+  dropWhile (==0) $ polyAdd ((map (*x) ys) ++ [0.0]) (polyMultiply xs ys)
+
+-- Polynomial, leading term division
+polyLeadDiv :: [Double] -> [Double] -> [Double]
+polyLeadDiv _ [] = error "ERROR(christian): division by 0"
+polyLeadDiv [] _ = []
+polyLeadDiv a b = [coeffDiv] ++ (replicate degDiff 0.0)
+  where aDeg = (genericLength a)-1
+        bDeg = (genericLength b)-1
+        degDiff = aDeg - bDeg
+        coeffDiv = (head a) / (head b)
+
+-- Polynomial division
+polDivision :: [Double] -> [Double] -> ([Double], [Double])
+polDivision _ [] = error "ERROR(christian): Divisor is 0"
+polDivision [] _ = ([], [])
+polDivision num denom =
+  let quotient = []
+      remainder = num
+  in alg num denom remainder quotient where
+
+    alg :: [Double] -> [Double] -> [Double] -> [Double] -> ([Double], [Double])
+    alg n d r q
+      | (r == []) || (rDeg < dDeg) = (q, r)
+      | otherwise = alg n d r' q'
+      where rDeg = (genericLength r)-1
+            dDeg = (genericLength d)-1
+            qTerm = polyLeadDiv r d
+            q' = polyAdd q qTerm
+            r' = polySub r (polyMultiply qTerm d)
