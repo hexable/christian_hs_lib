@@ -9,6 +9,12 @@
 --
 -----------------------------------------------------------------------------
 
+-----------------------------------------------------------------------------
+-- Study notes --
+
+-- Primitive recursion always terminates.
+-----------------------------------------------------------------------------
+
 import Test.QuickCheck
 import Data.Char
 import Data.List
@@ -498,7 +504,7 @@ intListOccurs3 x xs = length $ filter (== x) xs
 uniqueInteger :: [Integer] -> [Integer]
 uniqueInteger ns = [xs | xs <- ns, (integerListOccurs xs ns) == 1]
 
-{- Is a substring of a String? e.g "ship" is a substring of "fish and chips"
+{- e.g "ship" is a substring of "fish and chips"
 but not "hippies"
 -}
 isSubstring :: String -> String -> Bool
@@ -508,15 +514,33 @@ isSubstring p@(x:xs) q@(y:ys)
   | x == y = isSubstring xs ys
   | otherwise = isSubstring p ys
 
-{- Is a subsequence of a String? e.g "chip" is a subsequence of "fish and chips"
+{- e.g "chip" is a subsequence of "fish and chips"
 but not "chin up"
 -}
 isSubsequence :: String -> String -> Bool
-isSubsequence [] _ = True
-isSubsequence _ [] = False
-isSubsequence p@(x:xs) q@(y:ys)
-  | x == y && isSubsequence xs ys = True
-  | otherwise = isSubsequence p ys
+isSubsequence s t = helper s t 0
+  where helper :: String -> String -> Int -> Bool
+        helper [] _ _ = True
+        helper _ [] _ = False
+        helper p@(x:xs) q@(y:ys) flag
+          | x == y = helper xs ys 1
+          | (x /= y) && (flag /= 1) = helper p ys flag
+          | otherwise = False
+
+-- Thanks Niek for this one ;)
+isSubsequence2 :: String -> String -> Bool
+isSubsequence2 [] _ = True
+isSubsequence2 _ [] = False
+isSubsequence2 (x:xs) (y:ys)
+  | x == y && helper xs ys = True
+  | otherwise = isSubsequence2 (x:xs) ys
+  where
+    helper :: String -> String -> Bool
+    helper [] _ = True
+    helper _ [] = False
+    helper (x:xs) (y:ys)
+      | x == y && helper xs ys = True
+      | otherwise = False
 
 -- Is a String a palindrome?
 isPalindrome :: String -> Bool
@@ -625,3 +649,97 @@ polDivision num denom =
             qTerm = polyLeadDiv r d
             q' = polyAdd q qTerm
             r' = polySub r (polyMultiply qTerm d)
+
+-- List up to the nth Triangular number
+triangularNumbers :: Integer -> [Integer]
+triangularNumbers n = scanl (+) 1 [2..n]
+
+{- Create infinite Run-length sequence.
+Example sequence: 1,2,2,1,1,2,...
+-}
+--TODO
+
+{- Decode a run-length sequence.
+Example: 1,2,2,1,1,2,1,... <- 1,2,2,1,1,...
+-}
+decodeRunlengthSequence :: [Int] -> [Int]
+decodeRunlengthSequence x = helper x 0 0
+  where helper :: [Int] -> Int -> Int -> [Int]
+        helper [x] _ _ = [1]
+        helper p@(x:xs) digit count
+          | count == 0 = helper xs x 1
+          | (count == 1) && (x /= digit) = [1] ++ helper p 0 0
+          | otherwise = [2] ++ helper xs 0 0
+
+-- Implementation of map using list comprehension
+map2 :: (a -> a) -> [a] -> [a]
+map2 f xs = [f x | x <- xs]
+
+-- Implementation of map using recursion
+map3 :: (a -> a) -> [a] -> [a]
+map3 f [] = []
+map3 f (x:xs) = (f x) : (map3 f xs)
+
+-- Implementation of filter using list comprehension
+filter2 :: (a -> Bool) -> [a] -> [a]
+filter2 f xs = [x | x <- xs, f x]
+
+-- Implementation of filter using recursion
+filter3 :: (a -> Bool) -> [a] -> [a]
+filter3 f [] = []
+filter3 f (x:xs)
+  | f x = x:(filter3 f xs)
+  | otherwise = filter3 f xs
+
+-- Implementation of recursive foldr
+foldr2 :: (a -> a -> a) -> a -> [a] -> a
+foldr2 f z [] = z
+foldr2 f z (x:xs) = x `f` foldr2 f z xs
+
+-- Implementation of recursive foldl
+foldl2 :: (a -> a -> a) -> a -> [a] -> a
+foldl2 f z xs = foldr2 f z (reverse xs)
+
+-- Implementation of ++
+(+++) :: [a] -> [a] -> [a]
+xs +++ [] = xs
+[] +++ ys = ys
+(x:xs) +++ ys = x:(xs +++ ys)
+
+{- Are my implementations correct? Note the need of substituting function
+variables
+-}
+prop_map2_times xs = map2 (*2) xs == map (*2) xs
+prop_map3_times xs = map2 (*2) xs == map (*2) xs
+
+prop_filter2_even xs = filter2 isEven xs == filter isEven xs
+prop_filter3_even xs = filter3 isEven xs == filter isEven xs
+
+prop_foldr2_sum xs = foldr2 (+) 0 xs == foldr (+) 0 xs
+prop_foldl2_sum xs = foldl2 (+) 0 xs == foldl (+) 0 xs
+
+prop_conc xs ys = (+++) xs ys == (++) xs ys
+
+-- ++'ing over lists in a list
+concat2 :: [[a]] -> [a]
+concat2 [] = []
+concat2 (xs:xss) = xs ++ concat xss
+
+-- Mutual recursion of even/odd
+isEven2 :: Integer -> Bool
+isEven2 x = x == 0 || (0 < x && isOdd2 (x-1)) || (x < 0 && isOdd2 (x+1))
+
+isOdd2 :: Integer -> Bool
+isOdd2 x = (0 < x && isEven2 (x-1) || x < 0 && isEven2 (x+1))
+
+-- Insert element in ascending ordered list
+insert2 :: Ord a => a -> [a] -> [a]
+insert2 x [] = [x]
+insert2 x (y:ys)
+  | x < y = x:y:ys
+  | otherwise = y:(insert x ys)
+
+-- Insertion sort
+insertionSort :: Ord a => [a] -> [a]
+insertionSort [] = []
+insertionSort (x:xs) = insert2 x (insertionSort xs)
