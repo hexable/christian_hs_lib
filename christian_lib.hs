@@ -13,6 +13,23 @@
 -- Study notes --
 
 -- Primitive recursion always terminates.
+
+{- "Haskell functions can take functions as parameters and return functions as
+return values. A function that does either of those is called a higher order
+function." ~ learnyouahaskell
+-}
+
+-- Function application is left associative. e.g f a b c == (((f a) b) c)
+
+-- -> is right associative. e.g a -> b -> c == (a -> (b -> c))
+
+{- ($) has the lowest precedence, where ($) :: (a -> b) -> a -> b. So b is
+always evaluated first
+-}
+
+{- (.) is right associative. e.g (f.g.z) x == f (g (z x))
+-}
+
 -----------------------------------------------------------------------------
 
 import Test.QuickCheck
@@ -123,6 +140,10 @@ isLower2 c = ('a' <= c) && (c <= 'z')
 -- Is a Char uppercase
 isUpper2 :: Char -> Bool
 isUpper2 c = ('A' <= c) && (c <= 'Z')
+
+-- Now with currying!
+isUpper3 :: Char -> Bool
+isUpper3 = (`elem` ['A'..'Z'])
 
 -- Offset between uppercase and lowercase
 uppercaseOffset :: Int
