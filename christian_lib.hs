@@ -5,8 +5,13 @@
 -- Stability   :  unstable
 -- Portability :  portable
 --
--- This is my personal haskell library, let's see where it goes.
+-- This is my personal haskell library. It's a compilation of exercises
+-- completed from the 2nd ed of 'The Craft of Functional programming',
+-- university tutorials, assignments and some cool functions from lecture
+-- slides.
 --
+-- The lecture slide material comes from here https://www.in.tum.de/~nipkow/
+-- If I felt the need, comments end with a ~, denoting the location.
 -----------------------------------------------------------------------------
 
 -----------------------------------------------------------------------------
@@ -30,6 +35,19 @@ always evaluated first
 {- (.) is right associative. e.g (f.g.z) x == f (g (z x))
 -}
 
+{- Redux == reducible expression.
+Innermost: sq (3+4) = sq 7 = 7*7 = 49
+This corresponds to call by value as arguments are evaluated.
+
+Outermost: sq (3+4) = (3+4)*(3+4) = 7*(3+4) = 7*7 = 49
+This corresponds to call by name as arguments are unevaluated.
+-}
+
+{- To reduce the number of steps in outermost reduction, we cache an evaluation
+(called sharing) and don't evalutate it again e.g (3+4) is evalutated once and
+substituted. So lazy evaluation == outermost reduction + sharing. This never
+gives more steps than innermost reduction!
+-}
 -----------------------------------------------------------------------------
 
 import Test.QuickCheck
@@ -671,7 +689,7 @@ polDivision num denom =
             q' = polyAdd q qTerm
             r' = polySub r (polyMultiply qTerm d)
 
--- List up to the nth Triangular number
+-- List up to the nth Triangular number ~internets
 triangularNumbers :: Integer -> [Integer]
 triangularNumbers n = scanl (+) 1 [2..n]
 
@@ -692,32 +710,32 @@ decodeRunlengthSequence x = helper x 0 0
           | (count == 1) && (x /= digit) = [1] ++ helper p 0 0
           | otherwise = [2] ++ helper xs 0 0
 
--- Implementation of map using list comprehension
+-- Implementation of map using list comprehension ~lec slides
 map2 :: (a -> a) -> [a] -> [a]
 map2 f xs = [f x | x <- xs]
 
--- Implementation of map using recursion
+-- Implementation of map using recursion ~lec slides
 map3 :: (a -> a) -> [a] -> [a]
 map3 f [] = []
 map3 f (x:xs) = (f x) : (map3 f xs)
 
--- Implementation of filter using list comprehension
+-- Implementation of filter using list comprehension ~lec slides
 filter2 :: (a -> Bool) -> [a] -> [a]
 filter2 f xs = [x | x <- xs, f x]
 
--- Implementation of filter using recursion
+-- Implementation of filter using recursion ~lec slides
 filter3 :: (a -> Bool) -> [a] -> [a]
 filter3 f [] = []
 filter3 f (x:xs)
   | f x = x:(filter3 f xs)
   | otherwise = filter3 f xs
 
--- Implementation of recursive foldr
+-- Implementation of recursive foldr ~lec slides
 foldr2 :: (a -> a -> a) -> a -> [a] -> a
 foldr2 f z [] = z
 foldr2 f z (x:xs) = x `f` foldr2 f z xs
 
--- Implementation of recursive foldl
+-- Implementation of recursive foldl ~lec slides
 foldl2 :: (a -> a -> a) -> a -> [a] -> a
 foldl2 f z xs = foldr2 f z (reverse xs)
 
@@ -741,26 +759,73 @@ prop_foldl2_sum xs = foldl2 (+) 0 xs == foldl (+) 0 xs
 
 prop_conc xs ys = (+++) xs ys == (++) xs ys
 
--- ++'ing over lists in a list
+-- ++'ing over lists in a list ~lec slides
 concat2 :: [[a]] -> [a]
 concat2 [] = []
 concat2 (xs:xss) = xs ++ concat xss
 
--- Mutual recursion of even/odd
+-- Mutual recursion of even/odd ~lec slides
 isEven2 :: Integer -> Bool
 isEven2 x = x == 0 || (0 < x && isOdd2 (x-1)) || (x < 0 && isOdd2 (x+1))
 
 isOdd2 :: Integer -> Bool
 isOdd2 x = (0 < x && isEven2 (x-1) || x < 0 && isEven2 (x+1))
 
--- Insert element in ascending ordered list
+-- Insert element in ascending ordered list ~lec slides
 insert2 :: Ord a => a -> [a] -> [a]
 insert2 x [] = [x]
 insert2 x (y:ys)
   | x < y = x:y:ys
   | otherwise = y:(insert x ys)
 
--- Insertion sort
+-- Insertion sort ~lec slides
 insertionSort :: Ord a => [a] -> [a]
 insertionSort [] = []
 insertionSort (x:xs) = insert2 x (insertionSort xs)
+
+-- Quicksort ~lec slides
+quickSort :: Ord a => [a] -> [a]
+quickSort [] = []
+quickSort (x:xs) = below ++ [x] ++ above
+  where below = [y | y <- xs, y <= x]
+        above = [y | y <- xs, x < y]
+
+quickSort2 :: Ord a => [a] -> [a]
+quickSort2 [] = []
+quickSort2 (x:xs) = below ++ [x] ++ above
+  where (below, above) = partition x xs
+        partition n [] = ([],[])
+        partition n (x:xs) | x <= n = (x:leq, gt)
+                           | n < x = (leq, x:gt)
+                           where (leq, gt) = partition n xs
+
+-- List of lists of any weak ascending sublists ~lec slides
+ups :: Ord a => [a] -> [[a]]
+ups xs = helper xs []
+  where helper :: Ord a => [a] -> [a] -> [[a]]
+        helper (x:xs) [] = helper xs [x]
+        helper [] ys = [reverse ys]
+        helper (x:xs) (y:ys)
+          | x >= y = helper xs (x:y:ys)
+          | y < x = reverse (y:ys) : helper (x:xs) []
+
+{- Nice example of problem solving, how to count the occurences of words
+~lec slides
+-}
+countWords :: String -> String
+countWords =
+  unlines
+  . map (\(w,n) -> w ++ ": " ++ show n)
+  . map (\ws -> (head ws, length ws))
+  . group
+  . sort
+  . words
+
+-- Composition of two maps e.g map f . map g ~ lec slides
+countWords2 :: String -> String
+countWords2 =
+  unlines
+  . map (\ws -> head ws ++ ": " ++ show(length ws))
+  . group
+  . sort
+  . words
